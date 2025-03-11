@@ -17,16 +17,13 @@ public class Leitor : MonoBehaviour
 
     public float wavelengthLeft = 0.0f;
     public float wavelengthRight = 0.0f;
-
     public float mean_openLeft = 0.0f;
     public float mean_closeLeft = 0.0f;
 
     public float mean_openRight = 0.0f;
     public float mean_closeRight = 0.0f;
 
-    public bool? moveRight = null; // true = direita, false = esquerda, null = neutro
-
-    //public float neutralThreshold = 0.05f; // Ajuste para definir quando eh neutro
+    public bool? move = null; // true = direita, false = esquerda, null = neutro
 
     private List<float> wavelengthHistoryLeft = new List<float>();
     private List<float> wavelengthHistoryRight = new List<float>();
@@ -62,12 +59,12 @@ public class Leitor : MonoBehaviour
         UpdateMeanValues(ref mean_openLeft, ref mean_closeLeft, wavelengthLeft);
         UpdateMeanValues(ref mean_openRight, ref mean_closeRight, wavelengthRight);
 
-        moveRight = CompareWlValues();
+        move = CompareWlValues();
     }
 
     public bool? GetDirection()
     {
-        return moveRight;
+        return move;
     }
 
     float CalcWl(int channel, List<float> history)
@@ -118,31 +115,29 @@ public class Leitor : MonoBehaviour
         }
     }
 
-    bool? CompareWlValues()
+   bool? CompareWlValues()
     {
-        float diffLeft = Mathf.Abs(wavelengthLeft - mean_openLeft) - Mathf.Abs(wavelengthLeft - mean_closeLeft);
-        float diffRight = Mathf.Abs(wavelengthRight - mean_openRight) - Mathf.Abs(wavelengthRight - mean_closeRight);
+        // Determina se cada sensor está aberto ou fechado
+        bool leftOpen = Mathf.Abs(wavelengthLeft - mean_openLeft) < Mathf.Abs(wavelengthLeft - mean_closeLeft);
+        bool rightOpen = Mathf.Abs(wavelengthRight - mean_openRight) < Mathf.Abs(wavelengthRight - mean_closeRight);
 
-        //float diffTotal = Mathf.Abs(diffRight - diffLeft);
-
-        /*if (diffTotal < neutralThreshold)
+        // Se ambos estiverem abertos ou ambos fechados, retorna neutro
+        if (leftOpen == rightOpen)
         {
             Debug.Log("Neutro");
-            return null; // Estado neutro
+            return null;
         }
-        */
-        if (diffLeft > diffRight){
-            Debug.Log("mov esquerda");
-            return false; // esquerda
+        // Se o esquerdo estiver aberto e o direito fechado, move para a esquerda
+        else if (leftOpen && !rightOpen)
+        {
+            Debug.Log("Movendo para a esquerda");
+            return false;
         }
-        else if (diffRight > diffLeft){
-            Debug.Log("mov direita");
-            return true; // direita
-        }
+        // Se o direito estiver aberto e o esquerdo fechado, move para a direita
         else
         {
-            Debug.Log("Neutro");
-            return null; // Estado neutro
+            Debug.Log("Movendo para a direita");
+            return true;
         }
     }
 

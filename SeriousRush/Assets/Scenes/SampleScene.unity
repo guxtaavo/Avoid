@@ -1085,9 +1085,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2719437719093271605, guid: becee0b7a052ab44bb19b51626d45393, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.02
+      objectReference: {fileID: 0}
     - target: {fileID: 3890413362004415665, guid: becee0b7a052ab44bb19b51626d45393, type: 3}
       propertyPath: m_Name
       value: Plataforma
+      objectReference: {fileID: 0}
+    - target: {fileID: 4513114373657073446, guid: becee0b7a052ab44bb19b51626d45393, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.018
       objectReference: {fileID: 0}
     - target: {fileID: 4667010110268902260, guid: becee0b7a052ab44bb19b51626d45393, type: 3}
       propertyPath: m_LocalScale.z

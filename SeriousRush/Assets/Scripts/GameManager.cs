@@ -13,15 +13,16 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("GameOver chamado");
         gameOverPanel.SetActive(true);
-        //Time.timeScale = 0f; // Pausa o jogo
+        Time.timeScale = 0f; // Pausa o jogo
+        AudioListener.volume = 0f; // Silencia o áudio
     }
 
     public void RestartGame()
     {
-        Debug.Log("RestartGame foi chamado!");
-        gameOverPanel.SetActive(false);
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("SampleScene");
+    Debug.Log("RestartGame foi chamado!");
+    Time.timeScale = 1f; // Garante que o tempo volte ao normal
+    SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Carrega a cena atual corretamente
+    AudioListener.volume = 1f; // Restaura o volume do áudio
     }
 
     private void UpdateScore()

@@ -11,6 +11,6 @@ public class MenuController : MonoBehaviour
     //public void QuitGame()
     //{
     //    Debug.Log("Jogo Encerrado!");
-    //    Application.Quit(); // Encerra o jogo (funciona no build final, não no editor)
+    //    Application.Quit(); // Encerra o jogo (funciona no build final, nï¿½o no editor)
     //}
 }

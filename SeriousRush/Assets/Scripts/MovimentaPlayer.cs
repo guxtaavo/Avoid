@@ -7,12 +7,13 @@ public class MovimentaPlayer : MonoBehaviour
     public float velocidadeDoJogador; // Velocidade de movimento do jogador
     public Rigidbody body; // Referência ao Rigidbody da bola
     private float movimentoX; // Controle do movimento no eixo X
+
     private float minYPosition = -2f; // Posição mínima no eixo Y para encerrar o jogo
     private bool isGameOver = false; // Para evitar chamadas repetidas
 
     void Update()
     {
-        if (!isGameOver) // Se o jogo ainda estiver rodando
+        if (!isGameOver)
         {
             MovimentarBola();
 
@@ -25,10 +26,27 @@ public class MovimentaPlayer : MonoBehaviour
 
     private void MovimentarBola()
     {
-        movimentoX = Input.GetAxis("Horizontal") * velocidadeDoJogador;
+        movimentoX = 0f;
 
-        // Usa VelocityChange para um movimento mais responsivo
-        body.AddForce(new Vector3(movimentoX, 0f, 0f), ForceMode.VelocityChange);
+        if (Leitor.Instance != null)
+        {
+            bool? direction = Leitor.Instance.move;
+
+            if (direction == true)
+            {
+                movimentoX = 1f;
+            }
+            else if (direction == false)
+            {
+                movimentoX = -1f;
+            }
+            else
+            {
+                movimentoX = 0f;
+            }
+        }
+
+        body.AddForce(new Vector3(movimentoX * velocidadeDoJogador, 0f, 0f), ForceMode.VelocityChange);
 
         StabilizeZ();
     }
@@ -42,10 +60,10 @@ public class MovimentaPlayer : MonoBehaviour
 
     private void EndGame()
     {
-        if (!isGameOver) // Só chama GameOver uma vez
+        if (!isGameOver)
         {
             isGameOver = true;
-            Debug.Log("Jogo Encerrado!");
+            //Debug.Log("Jogo Encerrado!");
             FindObjectOfType<GameManager>().GameOver();
         }
     }

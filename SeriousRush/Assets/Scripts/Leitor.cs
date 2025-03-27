@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using UnityEngine;
 using MicronOptics.Hyperion.Communication;
-using UnityEngine.UI;
-using System.IO;
 
 public class Leitor : MonoBehaviour
 {
+    public static Leitor Instance { get; private set; }
+
     private TcpClient tcpClient;
     private NetworkStream tcpNetworkStream;
     private SpectrumData spectrumData;
 
-    public int channelLeft = 1;
-    public int channelRight = 2;
+    public int channelLeft = 2;
+    public int channelRight = 3;
 
     public float wavelengthLeft = 0.0f;
     public float wavelengthRight = 0.0f;
@@ -23,10 +23,24 @@ public class Leitor : MonoBehaviour
     public float mean_openRight = 0.0f;
     public float mean_closeRight = 0.0f;
 
-    public bool? move = null; // true = direita, false = esquerda, null = neutro
+    public bool? move = null;
 
     private List<float> wavelengthHistoryLeft = new List<float>();
     private List<float> wavelengthHistoryRight = new List<float>();
+
+    void Awake()
+    {
+        // Implementação do Singleton
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // persiste entre cenas
+        }
+        else
+        {
+            Destroy(gameObject); // evita duplicatas
+        }
+    }
 
     void Start()
     {
@@ -34,7 +48,6 @@ public class Leitor : MonoBehaviour
 
         try
         {
-            // Inicia a conex�o tcp
             tcpClient = new TcpClient();
             tcpClient.Connect(instrumentIpAddress, Command.TcpPort);
             tcpNetworkStream = tcpClient.GetStream();
@@ -44,12 +57,12 @@ public class Leitor : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Erro na conex�o TCP: {ex.Message}");
+            Debug.LogError($"Erro na conexão TCP: {ex.Message}");
         }
 
         mean_openLeft = mean_closeLeft = CalcWl(channelLeft, wavelengthHistoryLeft);
         mean_openRight = mean_closeRight = CalcWl(channelRight, wavelengthHistoryRight);
-    } 
+    }
 
     void Update()
     {
@@ -115,30 +128,31 @@ public class Leitor : MonoBehaviour
         }
     }
 
-   bool? CompareWlValues()
+    bool? CompareWlValues()
     {
-        // Determina se cada sensor está aberto ou fechado
-        bool leftOpen = Mathf.Abs(wavelengthLeft - mean_openLeft) < Mathf.Abs(wavelengthLeft - mean_closeLeft);
-        bool rightOpen = Mathf.Abs(wavelengthRight - mean_openRight) < Mathf.Abs(wavelengthRight - mean_closeRight);
+        float leftOpen = Map(wavelengthLeft, mean_openLeft, mean_closeLeft, 0, 1);
+        float rightOpen = Map(wavelengthRight, mean_openRight, mean_closeRight, 0, 1);
 
-        // Se ambos estiverem abertos ou ambos fechados, retorna neutro
-        if (leftOpen == rightOpen)
+        if (leftOpen >= 0.3f)
         {
-            Debug.Log("Neutro");
-            return null;
-        }
-        // Se o esquerdo estiver aberto e o direito fechado, move para a esquerda
-        else if (leftOpen && !rightOpen)
-        {
-            Debug.Log("Movendo para a esquerda");
+            //Debug.Log("Movendo para a esquerda");
             return false;
         }
-        // Se o direito estiver aberto e o esquerdo fechado, move para a direita
-        else
+        else if (rightOpen >= 0.3f)
         {
-            Debug.Log("Movendo para a direita");
+            //Debug.Log("Movendo para a direita");
             return true;
         }
+        else
+        {
+            //Debug.Log("Neutro");
+            return null;
+        }
+    }
+
+    float Map(float x, float in_min, float in_max, float out_min, float out_max)
+    {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
     void OnApplicationQuit()

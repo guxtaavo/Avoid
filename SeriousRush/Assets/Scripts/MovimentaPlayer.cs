@@ -1,15 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MovimentaPlayer : MonoBehaviour
 {
-    public float velocidadeDoJogador; // Velocidade de movimento do jogador
-    public Rigidbody body; // Referência ao Rigidbody da bola
-    private float movimentoX; // Controle do movimento no eixo X
+    public float velocidadeDoJogador;
+    public Rigidbody body;
+    private float movimentoX;
 
-    private float minYPosition = -2f; // Posição mínima no eixo Y para encerrar o jogo
-    private bool isGameOver = false; // Para evitar chamadas repetidas
+    private float minYPosition = -2f;
+    private bool isGameOver = false;
 
     void Update()
     {
@@ -28,26 +26,20 @@ public class MovimentaPlayer : MonoBehaviour
     {
         movimentoX = 0f;
 
-        if (Leitor.Instance != null)
+        // Verifica se o broker foi inicializado
+        if (MqttBrokerBehaviour.instance != null)
         {
-            bool? direction = Leitor.Instance.move;
+            int estado = MqttBrokerBehaviour.instance.HandState;
 
-            if (direction == true)
-            {
-                movimentoX = 1f;
-            }
-            else if (direction == false)
-            {
+            if (estado == -1)
                 movimentoX = -1f;
-            }
+            else if (estado == 1)
+                movimentoX = 1f;
             else
-            {
                 movimentoX = 0f;
-            }
         }
 
         body.AddForce(new Vector3(movimentoX * velocidadeDoJogador, 0f, 0f), ForceMode.VelocityChange);
-
         StabilizeZ();
     }
 
@@ -63,7 +55,6 @@ public class MovimentaPlayer : MonoBehaviour
         if (!isGameOver)
         {
             isGameOver = true;
-            //Debug.Log("Jogo Encerrado!");
             FindObjectOfType<GameManager>().GameOver();
         }
     }

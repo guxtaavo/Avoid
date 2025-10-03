@@ -16,12 +16,6 @@ The main goal of the game is to **dodge obstacles** along an endless track, whil
 
 ---
 
-## 🖼️ Game Example
-
-![Avoid](img/image.png)
-
----
-
 ## ⚙️ Technologies Used
 - **Unity Engine** (game development)  
 - **Myo Armband** (flexion and extension EMG signal recognition)  
@@ -53,3 +47,9 @@ The main goal of the game is to **dodge obstacles** along an endless track, whil
 3. The trained model sends EMG data to **Unity** in real time.  
 4. Control the **yellow sphere** by contracting muscles for **flexion or extension** to dodge the blocks.  
 5. Survive as long as possible and achieve the highest score.  
+
+---
+
+## 🖼️ Game Example
+
+![Avoid](img/image.png)

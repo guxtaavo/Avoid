@@ -17,11 +17,8 @@ The main goal of the game is to **dodge obstacles** along an endless track, whil
 ---
 
 ## 🖼️ Game Example
-Figure 1 - Avoid
 
 ![Avoid](img/image.png)
-
-Source: Author.
 
 ---
 
